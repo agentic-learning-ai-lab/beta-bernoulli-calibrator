@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.swp
+.DS_Store
+
+results/
+results_*/
+analysis/figures/
+tests/
