@@ -9,6 +9,9 @@ binary outcome       y ~ Bernoulli(p)
 calibrated forecast  p̂ = E[p]
 epistemic uncertainty  û = Var[p]
 ```
+<p align="center">
+  <img src="assets/pipeline.png" alt="Beta-Bernoulli-Calibrator Pipeline" width="700">
+</p>
 
 ## Setup
 
