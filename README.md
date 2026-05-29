@@ -1,6 +1,8 @@
 # Aligning LLMs with Human Uncertainty: A Beta-Bernoulli Calibrator for LLM Forecasting
 
 
+### [Paper](https://arxiv.org/pdf/2605.27668) | [Website](https://agenticlearning.ai/beta-bernoulli-calibrator/)
+
 Beta-Bernoulli Calibrator (BBC) is a lightweight, model-agnostic post-hoc calibrator that converts an LLM's verbalized point forecast into a mixture of Beta distributions over the latent event probability, trained on both binary outcomes and aggregated human forecasts:
 
 ```
@@ -147,4 +149,16 @@ Outputs will be in `results/default/<method>/<input_model>/...`, where the analy
 ```
 question, resolution_criteria, open_date, close_date,
 resolve_date, resolution, forecast_histogram, source, category
+```
+
+## BibTex
+```bibtex
+@misc{dai2026bbc,
+  title         = {Aligning LLMs with Human Uncertainty: A Beta-Bernoulli Calibrator for LLM Forecasting},
+  author        = {Dai, Hui and Teehan, Ryan and Torabian, Parsa and Ren, Mengye},
+  year          = {2026},
+  eprint        = {2605.27668},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
 ```
