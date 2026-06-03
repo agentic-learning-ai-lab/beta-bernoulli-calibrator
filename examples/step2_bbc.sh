@@ -29,6 +29,7 @@ for INPUT in "${INPUTS[@]}"; do
             --epochs 15 \
             --binary_coeff 1 \
             --human_coeff "$HC" \
+            --no_reasoning \
             --lr "$LR" \
             --lora_rank "$RANK" \
             --n_models 5 \
