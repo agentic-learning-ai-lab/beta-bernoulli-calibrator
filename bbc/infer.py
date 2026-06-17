@@ -30,17 +30,16 @@ from utils.metric import get_ece
 def _format_prompt(entry, use_reasoning: bool, use_forecast: bool) -> str:
     r = entry["response"]["decision_history"][-1]
     q = entry["question"]
-    step_reasoning = r.get("step_reasoning", "")
-    reasoning = r["reasoning"]
-    parameters = r["parameters"]
 
     if use_reasoning:
+        step_reasoning = r.get("step_reasoning", "")
+        reasoning = r["reasoning"]
         reasoning_text = f"Reasoning: {reasoning}\n\n----\n"
         step_text = ("Step reasoning:\n" + "\n".join(step_reasoning) + "\n\n----\n") if step_reasoning else ""
     else:
         reasoning_text, step_text = "", ""
 
-    forecast_text = f"Forecast: {parameters}\n" if use_forecast else ""
+    forecast_text = f"Forecast: {r['parameters']}\n" if use_forecast else ""
 
     text = f"Forecast Question: {q}\n\n----\n{reasoning_text}{step_text}{forecast_text}"
     text += "<endoftext>"
@@ -186,9 +185,11 @@ def main():
     test_entries = read_json(args.test_path)
     texts: List[str] = []
     y_true: List[int] = []
+    has_resolution = all("resolution" in e for e in test_entries)
     for e in test_entries:
         texts.append(_format_prompt(e, use_reasoning, use_forecast))
-        y_true.append(1 if str(e["resolution"]).strip().lower() in ["yes", "yes.", "y", "true", "1"] else 0)
+        if has_resolution:
+            y_true.append(1 if str(e["resolution"]).strip().lower() in ["yes", "yes.", "y", "true", "1"] else 0)
 
     # Batched inference
     preds: List[float] = []
@@ -222,14 +223,17 @@ def main():
     write_json(args.output_path, test_entries)
     print(f"[infer] Wrote predictions to {args.output_path}")
 
-    # Compute & write metrics
-    metrics = compute_metrics(y_true, preds)
-    metrics_path = args.metrics_path or os.path.join(os.path.dirname(args.output_path), "metrics.json")
-    write_json(metrics_path, metrics)
-    print("[infer] Test metrics:")
-    for k, v in metrics.items():
-        print(f"  {k:>10}: {v}")
-    print(f"[infer] Wrote metrics to {metrics_path}")
+    # Compute & write metrics only when labels are available.
+    if has_resolution:
+        metrics = compute_metrics(y_true, preds)
+        metrics_path = args.metrics_path or os.path.join(os.path.dirname(args.output_path), "metrics.json")
+        write_json(metrics_path, metrics)
+        print("[infer] Test metrics:")
+        for k, v in metrics.items():
+            print(f"  {k:>10}: {v}")
+        print(f"[infer] Wrote metrics to {metrics_path}")
+    else:
+        print("[infer] No `resolution` field found; skipped metrics.")
 
 if __name__ == "__main__":
     main()
